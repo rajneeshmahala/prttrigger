@@ -36,8 +36,9 @@ jobs:
         
 
           APP=$(echo "$SOURCE_BRANCH" | cut -d'/' -f2 | cut -d'-' -f1)
-          SPRINT=$(echo "$SOURCE_BRANCH" | cut -d'-' -f3)
-          TEAM=$(echo "$SOURCE_BRANCH" | cut -d'-' -f4)
+          SPRINT=$(echo "$SOURCE_BRANCH" | cut -d'-' -f2)
+          TEAM=$(echo "$SOURCE_BRANCH" | cut -d'-' -f3)
+
 
           TARGET_BRANCH="consilidate/${APP}-${SPRINT}-${TEAM}"
 
