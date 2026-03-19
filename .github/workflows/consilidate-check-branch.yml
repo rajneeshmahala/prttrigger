@@ -1,4 +1,4 @@
-name: consolidate + Conditional PR
+name: WIP → Consolidate + Conditional PR
 
 on:
   push:
@@ -29,18 +29,21 @@ jobs:
         id: vars
         run: |
           SOURCE_BRANCH="${GITHUB_REF#refs/heads/}"
-
           echo "Processing: $SOURCE_BRANCH"
 
-          
-        
+          # ✅ Validate format
+          if [[ ! "$SOURCE_BRANCH" =~ ^wip\/[a-zA-Z0-9]+-[0-9]+-team[0-9]+$ ]]; then
+            echo "❌ Invalid branch format. Expected: wip/<app>-<sprint>-team<no>"
+            exit 1
+          fi
 
           APP=$(echo "$SOURCE_BRANCH" | cut -d'/' -f2 | cut -d'-' -f1)
           SPRINT=$(echo "$SOURCE_BRANCH" | cut -d'-' -f2)
           TEAM=$(echo "$SOURCE_BRANCH" | cut -d'-' -f3)
 
+        
 
-          TARGET_BRANCH="consilidate/${APP}-${SPRINT}-${TEAM}"
+          TARGET_BRANCH="consolidate/${APP}-${TEAM}-${SPRINT}"
 
           echo "source=$SOURCE_BRANCH" >> $GITHUB_OUTPUT
           echo "target=$TARGET_BRANCH" >> $GITHUB_OUTPUT
@@ -58,10 +61,10 @@ jobs:
 
           if git ls-remote --exit-code --heads origin ${{ steps.vars.outputs.target }}; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "✅ WIP branch exists"
+            echo "✅ Consolidate branch exists"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "🚀 WIP branch will be created"
+            echo "🚀 Consolidate branch will be created"
           fi
 
       # ✅ Create consolidate branch ONLY if missing
@@ -71,7 +74,6 @@ jobs:
           TARGET=${{ steps.vars.outputs.target }}
 
           echo "Creating $TARGET from main"
-
           git checkout origin/main -b $TARGET
           git push origin $TARGET
 
@@ -90,9 +92,7 @@ jobs:
 
           git checkout $SOURCE
 
-          git merge origin/$TARGET --no-commit --no-ff || echo "MERGE_FAILED=true" >> $GITHUB_ENV
-
-          if [ "$MERGE_FAILED" = "true" ]; then
+          if ! git merge origin/$TARGET --no-commit --no-ff; then
             echo "❌ Merge conflict detected with $TARGET"
             exit 1
           else
@@ -105,21 +105,30 @@ jobs:
       - name: Create Pull Request
         if: steps.check.outputs.exists == 'true'
         env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SOURCE=${{ steps.vars.outputs.source }}
           TARGET=${{ steps.vars.outputs.target }}
 
           echo "Creating PR: $SOURCE → $TARGET"
 
-          EXISTING=$(gh pr list --base "$TARGET" --head "$SOURCE" --state open --json number --jq '.[0].number')
+          EXISTING=$(gh pr list \
+            --base "$TARGET" \
+            --head "$SOURCE" \
+            --state open \
+            --json number \
+            --jq '.[0].number')
 
           if [ -z "$EXISTING" ]; then
             gh pr create \
               --base "$TARGET" \
               --head "$SOURCE" \
               --title "Auto PR: $SOURCE → $TARGET" \
-              --body "🚀 Auto-created PR\n\nApp: ${{ steps.vars.outputs.app }}\nSprint: ${{ steps.vars.outputs.sprint }}\nTeam: ${{ steps.vars.outputs.team }}"
+              --body "🚀 Auto-created PR
+
+App: ${{ steps.vars.outputs.app }}
+Sprint: ${{ steps.vars.outputs.sprint }}
+Team: ${{ steps.vars.outputs.team }}"
           else
             echo "✅ PR #$EXISTING already exists. Skipping."
           fi
@@ -128,7 +137,7 @@ jobs:
       - name: Summary
         run: |
           if [ "${{ steps.check.outputs.exists }}" == "false" ]; then
-            echo "✔ WIP branch created. No PR needed."
+            echo "✔ Consolidate branch created. No PR needed."
           else
-            echo "✔ WIP branch existed. PR handled."
+            echo "✔ Consolidate branch existed. PR handled."
           fi
