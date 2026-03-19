@@ -17,10 +17,7 @@ jobs:
           fetch-depth: 0
 
       # Git config
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+    
 
       # Extract branch info
       - name: Extract branch info
@@ -40,6 +37,10 @@ jobs:
           echo "Target Branch: $TARGET_BRANCH"
 
       # Check if QA branch exists
+        - name: Configure Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
       - name: Check if QA branch exists
         id: check
         run: |
