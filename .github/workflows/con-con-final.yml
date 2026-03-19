@@ -38,7 +38,7 @@ jobs:
           SPRINT=$(echo "$SOURCE_BRANCH" | cut -d'-' -f3)
           TEAM=$(echo "$SOURCE_BRANCH" | cut -d'-' -f4)
 
-          TARGET_BRANCH="consolidate/${APP}-${SPRINT}"
+          TARGET_BRANCH="ConsoliDate/${APP}-${SPRINT}"
 
           echo "source=$SOURCE_BRANCH" >> $GITHUB_OUTPUT
           echo "target=$TARGET_BRANCH" >> $GITHUB_OUTPUT
