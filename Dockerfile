@@ -1,5 +1,5 @@
-FROM node:18
-
+FROM node:18-alpine
+RUN apt-get update && apt-get upgrade -y
 WORKDIR /app
 
 COPY . .
