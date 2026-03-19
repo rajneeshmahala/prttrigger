@@ -1,4 +1,0 @@
-gkjgjkgjkgjkgjkg
-
-kgkg
-# prttriggercgjhvbn.km
