@@ -4,9 +4,12 @@ WORKDIR /app
 
 COPY . .
 
-# ✅ FIX vulnerabilities
+# FIX vulnerabilities
 RUN apk update && apk upgrade
 
 RUN npm install
 
 CMD ["node", "app.js"]
+
+
+
