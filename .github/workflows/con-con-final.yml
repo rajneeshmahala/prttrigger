@@ -3,7 +3,7 @@ name: consolidate team> consolidate final
 on:
   push:
     branches:
-      - 'consolidate/*'
+      - consolidate/*
 
 permissions:
   contents: write
