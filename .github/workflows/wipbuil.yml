@@ -13,68 +13,8 @@ jobs:
       # ✅ Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
-
-      # ✅ Setup Node.js
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
-      # ✅ Install dependencies
-      - name: Install dependencies
-        run: npm install
-
-      # ✅ Lint
-      - name: Run lint
-        run: npm run lint
-
-      # ✅ Run tests
-      - name: Run tests
-        run: npm test
-
-      # ✅ Build project
-      - name: Build app
-        run: npm run build
-
-      # 🔢 Set Build ID
-      - name: Set Build ID
-        id: vars
-        run: |
-          echo "BUILD_ID=${{ github.run_number }}" >> $GITHUB_ENV
-          echo "IMAGE_NAME=demo-ci-app" >> $GITHUB_ENV
-
-      # 🐳 Build Docker Image with ID
-      - name: Build Docker Image
-        run: |
-          docker build -t $IMAGE_NAME:$BUILD_ID .
-          docker build -t $IMAGE_NAME:latest .
-
-      # 🔐 Trivy FS Scan
-      - name: Run Trivy FS Scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          exit-code: 1
-          severity: CRITICAL,HIGH
-
-      # 🔐 Trivy Image Scan (using build id)
-      - name: Run Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          image-ref: demo-ci-app:${{ env.BUILD_ID }}
-          exit-code: 1
-          severity: CRITICAL
-          ignore-unfixed: true
-
-      # 🚀 Docker Image Push to ACR (Optional)
-            # 🚀 Docker Image Push to ACR (Demo Only)
-      - name: Docker image push to ACR (Demo)
-        run: |
-          echo "Logging into ACR: image push to acr"
-      #    echo "Tagging image: demo-ci-app:${{ env.BUILD_ID }}"
-      #    echo "Target: ${{ secrets.ACR_LOGIN_SERVER }}/demo-ci-app:${{ env.BUILD_ID }}"
-      #    echo "🚀 Docker image pushed to Azure Container Registry successfully (simulated)"
+          fetch-depth: 0
       - name: Configure Git
         run: |
           git config user.name "github-actions"
@@ -144,3 +84,65 @@ jobs:
 
       
    
+      # ✅ Setup Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # ✅ Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # ✅ Lint
+      - name: Run lint
+        run: npm run lint
+
+      # ✅ Run tests
+      - name: Run tests
+        run: npm test
+
+      # ✅ Build project
+      - name: Build app
+        run: npm run build
+
+      # 🔢 Set Build ID
+      - name: Set Build ID
+        id: vars
+        run: |
+          echo "BUILD_ID=${{ github.run_number }}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=demo-ci-app" >> $GITHUB_ENV
+
+      # 🐳 Build Docker Image with ID
+      - name: Build Docker Image
+        run: |
+          docker build -t $IMAGE_NAME:$BUILD_ID .
+          docker build -t $IMAGE_NAME:latest .
+
+      # 🔐 Trivy FS Scan
+      - name: Run Trivy FS Scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+      # 🔐 Trivy Image Scan (using build id)
+      - name: Run Trivy Image Scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: demo-ci-app:${{ env.BUILD_ID }}
+          exit-code: 1
+          severity: CRITICAL
+          ignore-unfixed: true
+
+      # 🚀 Docker Image Push to ACR (Optional)
+            # 🚀 Docker Image Push to ACR (Demo Only)
+      - name: Docker image push to ACR (Demo)
+        run: |
+          echo "Logging into ACR: image push to acr"
+      #    echo "Tagging image: demo-ci-app:${{ env.BUILD_ID }}"
+      #    echo "Target: ${{ secrets.ACR_LOGIN_SERVER }}/demo-ci-app:${{ env.BUILD_ID }}"
+      #    echo "🚀 Docker image pushed to Azure Container Registry successfully (simulated)"
+     
