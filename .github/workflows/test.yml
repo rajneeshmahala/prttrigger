@@ -15,11 +15,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      # Git config
-    
-
-      # Extract branch info
+# Extract branch info
       - name: Extract branch info
         id: vars
         run: |
