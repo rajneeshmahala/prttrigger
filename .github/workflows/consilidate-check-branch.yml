@@ -31,9 +31,9 @@ jobs:
           SOURCE_BRANCH="${GITHUB_REF#refs/heads/}"
           echo "Processing: $SOURCE_BRANCH"
 
-          # ✅ Validate format
+          # Validate format
           if [[ ! "$SOURCE_BRANCH" =~ ^wip\/[a-zA-Z0-9]+-[0-9]+-team[0-9]+$ ]]; then
-            echo "❌ Invalid branch format. Expected: wip/<app>-<sprint>-team<no>"
+            echo "Invalid branch format. Expected: wip/<app>-<sprint>-team<no>"
             exit 1
           fi
 
@@ -41,7 +41,10 @@ jobs:
           SPRINT=$(echo "$SOURCE_BRANCH" | cut -d'-' -f2)
           TEAM=$(echo "$SOURCE_BRANCH" | cut -d'-' -f3)
 
-        
+          # Mapping
+          if [ "$APP" = "api" ]; then
+            APP="apt"
+          fi
 
           TARGET_BRANCH="consolidate/${APP}-${TEAM}-${SPRINT}"
 
@@ -51,7 +54,7 @@ jobs:
           echo "sprint=$SPRINT" >> $GITHUB_OUTPUT
           echo "team=$TEAM" >> $GITHUB_OUTPUT
 
-          echo "✅ Target Branch: $TARGET_BRANCH"
+          echo "Target Branch: $TARGET_BRANCH"
 
       # ✅ Check if consolidate branch exists
       - name: Check if consolidate branch exists
@@ -59,85 +62,37 @@ jobs:
         run: |
           git fetch origin
 
-          if git ls-remote --exit-code --heads origin ${{ steps.vars.outputs.target }}; then
+          if git ls-remote --exit-code --heads origin "${{ steps.vars.outputs.target }}"; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "✅ Consolidate branch exists"
+            echo "Consolidate branch exists"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "🚀 Consolidate branch will be created"
+            echo "Consolidate branch will be created"
           fi
 
       # ✅ Create consolidate branch ONLY if missing
       - name: Create consolidate branch
         if: steps.check.outputs.exists == 'false'
         run: |
-          TARGET=${{ steps.vars.outputs.target }}
+          TARGET="${{ steps.vars.outputs.target }}"
 
           echo "Creating $TARGET from main"
-          git checkout origin/main -b $TARGET
-          git push origin $TARGET
+          git checkout origin/main -b "$TARGET"
+          git push origin "$TARGET"
 
       # ✅ Fetch target branch (ensure available)
       - name: Fetch target branch
         if: steps.check.outputs.exists == 'true'
         run: |
-          git fetch origin ${{ steps.vars.outputs.target }}
+          git fetch origin "${{ steps.vars.outputs.target }}"
 
-      # ✅ Conflict check ONLY if branch exists
-      - name: Check merge conflict
-        if: steps.check.outputs.exists == 'true'
-        run: |
-          SOURCE=${{ steps.vars.outputs.source }}
-          TARGET=${{ steps.vars.outputs.target }}
-
-          git checkout $SOURCE
-
-          if ! git merge origin/$TARGET --no-commit --no-ff; then
-            echo "❌ Merge conflict detected with $TARGET"
-            exit 1
-          else
-            echo "✅ No conflicts"
-          fi
-
-          git merge --abort || true
-
-      # ✅ Create PR ONLY if branch already existed
-      - name: Create Pull Request
-        if: steps.check.outputs.exists == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          SOURCE=${{ steps.vars.outputs.source }}
-          TARGET=${{ steps.vars.outputs.target }}
-
-          echo "Creating PR: $SOURCE → $TARGET"
-
-          EXISTING=$(gh pr list \
-            --base "$TARGET" \
-            --head "$SOURCE" \
-            --state open \
-            --json number \
-            --jq '.[0].number')
-
-          if [ -z "$EXISTING" ]; then
-            gh pr create \
-              --base "$TARGET" \
-              --head "$SOURCE" \
-              --title "Auto PR: $SOURCE → $TARGET" \
-              --body "🚀 Auto-created PR
-
-App: ${{ steps.vars.outputs.app }}
-Sprint: ${{ steps.vars.outputs.sprint }}
-Team: ${{ steps.vars.outputs.team }}"
-          else
-            echo "✅ PR #$EXISTING already exists. Skipping."
-          fi
-
+      
+   
       # ✅ Final summary
       - name: Summary
         run: |
           if [ "${{ steps.check.outputs.exists }}" == "false" ]; then
-            echo "✔ Consolidate branch created. No PR needed."
+            echo "Consolidate branch created. No PR needed."
           else
-            echo "✔ Consolidate branch existed. PR handled."
+            echo "Consolidate branch existed. PR handled."
           fi
