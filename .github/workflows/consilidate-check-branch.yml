@@ -1,4 +1,4 @@
-name: Feature → consolidate + Conditional PR
+name: consolidate + Conditional PR
 
 on:
   push:
