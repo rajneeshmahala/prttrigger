@@ -9,7 +9,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  gitleaks-scan:
+  security-scan:
     runs-on: ubuntu-latest
 
     steps:
