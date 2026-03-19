@@ -1,12 +1,9 @@
-name: Demo Build Pipeline (CI)
+name: Demo Build Pipeline (CI + Docker + Trivy)
 
 on:
   push:
     branches:
       - wip/*
- # pull_request:
- #   branches:
- #     - wip/*
 
 jobs:
   build:
@@ -38,3 +35,33 @@ jobs:
       # ✅ Build project
       - name: Build app
         run: npm run build
+
+      # 🔢 Set Build ID
+      - name: Set Build ID
+        id: vars
+        run: |
+          echo "BUILD_ID=${{ github.run_number }}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=demo-ci-app" >> $GITHUB_ENV
+
+      # 🐳 Build Docker Image with ID
+      - name: Build Docker Image
+        run: |
+          docker build -t $IMAGE_NAME:$BUILD_ID .
+          docker build -t $IMAGE_NAME:latest .
+
+      # 🔐 Trivy FS Scan
+      - name: Run Trivy FS Scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+      # 🔐 Trivy Image Scan (using build id)
+      - name: Run Trivy Image Scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: demo-ci-app:${{ env.BUILD_ID }}
+          exit-code: 1
+          severity: CRITICAL,HIGH
