@@ -1,1 +1,1 @@
-# prttrigger
+# prttriggereditied in conf
