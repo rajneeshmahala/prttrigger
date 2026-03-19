@@ -2,9 +2,9 @@ name: Deploy to Azure Container App (Demo)
 
 on:
   workflow_run:
-    workflows:
-      - Demo Build Pipeline (CI + Docker + Trivy)
+    workflows: ["Build Pipeline"]
     types:
+
       - completed
 
 jobs:
