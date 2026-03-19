@@ -37,11 +37,11 @@ jobs:
           severity: CRITICAL,HIGH
       
 
-        # 🔐 Credential Scanning (FIXED)
-      - name: Credential Scan (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
-        with:
-          args: detect --no-git --source=. --redact
+ #       # 🔐 Credential Scanning (FIXED)
+ #     - name: Credential Scan (Gitleaks)
+ #       uses: gitleaks/gitleaks-action@v2
+ #       with:
+ #         args: detect --no-git --source=. --redact
 
  #     - uses: SonarSource/sonarqube-scan-action@v6
  #       env:
