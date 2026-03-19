@@ -2,8 +2,7 @@ name: Deploy Debug
 
 on:
   workflow_run:
-    workflows:
-      - Demo Build Pipeline (CI + Docker + Trivy)
+    workflows: ["Build Pipeline"]
     types:
       - completed
 

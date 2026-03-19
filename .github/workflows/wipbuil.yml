@@ -1,4 +1,4 @@
-name: Demo Build Pipeline (CI + Docker + Trivy)
+name: Build Pipeline
 
 on:
   push:
