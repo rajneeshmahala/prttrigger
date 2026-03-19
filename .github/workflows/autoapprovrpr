@@ -1,0 +1,43 @@
+name: PR Security Check + Auto Approve
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  gitleaks-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ✅ Run Gitleaks scan
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --verbose --redact
+
+      # ✅ Approve PR ONLY if above step succeeds
+      - name: Approve PR
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+
+          echo "Approving PR #$PR_NUMBER"
+
+          gh pr review $PR_NUMBER --approve
+
+      # ❌ Optional: log failure
+      - name: If failed
+        if: failure()
+        run: |
+          echo "❌ Gitleaks failed. PR will NOT be approved."
