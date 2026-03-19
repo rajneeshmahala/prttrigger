@@ -48,7 +48,7 @@ jobs:
 
           gh pr merge $PR_NUMBER \
             --merge \
-            --delete-branch    
+#           --delete-branch    
       # ❌ Optional: log failure
       - name: If failed
         if: failure()
