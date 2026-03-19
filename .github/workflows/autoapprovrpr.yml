@@ -23,6 +23,54 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      # 🔐 Trivy FS Scan
+      - name: Run Trivy FS Scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          exit-code: 1
+          severity: CRITICAL,HIGH
+      
+
+        # 🔐 Credential Scanning (FIXED)
+      - name: Credential Scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --no-git --source=. --redact
+
+ #     - uses: SonarSource/sonarqube-scan-action@v6
+ #       env:
+ #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+ #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # 🔥 Quality Gate Check (IMPORTANT)
+ #     - name: SonarQube Quality Gate
+ #       uses: sonarsource/sonarqube-quality-gate-action@v1
+ #       with:
+ #         pollingTimeoutSec: 300
+ #       env:
+ #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
+      # ✅ Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # ✅ Lint
+      - name: Run lint
+        run: npm run lint
+
+      # ✅ Run tests
+      - name: Run tests
+        run: npm test
+
+      # ✅ Build project
+      - name: Build app
+        run: npm run build
 
       # ✅ Approve PR ONLY if above step succeeds
       - name: Approve PR
