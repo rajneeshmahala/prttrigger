@@ -1,4 +1,4 @@
-name: Build Pipeline
+name: aut pr to QA from ConsoliDate
 
 on:
   push:
