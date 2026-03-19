@@ -1,0 +1,11 @@
+{
+  "name": "demo-ci-app",
+  "version": "1.0.0",
+  "description": "Dummy CI/CD demo app",
+  "main": "app.js",
+  "scripts": {
+    "lint": "echo 'Lint OK'",
+    "test": "node test/app.test.js",
+    "build": "echo 'Build successful'"
+  }
+}
