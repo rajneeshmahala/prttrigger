@@ -1,0 +1,40 @@
+name: Demo Build Pipeline (CI)
+
+on:
+  push:
+    branches:
+      - wip/*
+ # pull_request:
+ #   branches:
+ #     - wip/*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ✅ Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ✅ Setup Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # ✅ Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # ✅ Lint
+      - name: Run lint
+        run: npm run lint
+
+      # ✅ Run tests
+      - name: Run tests
+        run: npm test
+
+      # ✅ Build project
+      - name: Build app
+        run: npm run build
