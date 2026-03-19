@@ -1,4 +1,4 @@
-name: Feature → WIP + Conditional PR
+name: Feature → consolidate + Conditional PR
 
 on:
   push:
