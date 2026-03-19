@@ -68,9 +68,10 @@ jobs:
           ignore-unfixed: true
 
       # 🚀 Docker Image Push to ACR (Optional)
-      - name: Docker image push to ACR
-   #     if: false   # change to true when ready
-   #     run: |
-   #       echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
-   #       docker tag demo-ci-app:${{ env.BUILD_ID }} ${{ secrets.ACR_LOGIN_SERVER }}/demo-ci-app:${{ env.BUILD_ID }}
-   #       docker push ${{ secrets.ACR_LOGIN_SERVER }}/demo-ci-app:${{ env.BUILD_ID }}
+            # 🚀 Docker Image Push to ACR (Demo Only)
+      - name: Docker image push to ACR (Demo)
+        run: |
+          echo "Logging into ACR: image push to acr"
+      #    echo "Tagging image: demo-ci-app:${{ env.BUILD_ID }}"
+      #    echo "Target: ${{ secrets.ACR_LOGIN_SERVER }}/demo-ci-app:${{ env.BUILD_ID }}"
+      #    echo "🚀 Docker image pushed to Azure Container Registry successfully (simulated)"
