@@ -108,7 +108,7 @@ jobs:
 
       # 🔢 Set Build ID
       - name: Set Build ID
-        id: vars
+        id: build_vars
         run: |
           echo "BUILD_ID=${{ github.run_number }}" >> $GITHUB_ENV
           echo "IMAGE_NAME=demo-ci-app" >> $GITHUB_ENV
