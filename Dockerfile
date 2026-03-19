@@ -1,8 +1,11 @@
 FROM node:18-alpine
-#RUN apt-get update && apt-get upgrade -y
+
 WORKDIR /app
 
 COPY . .
+
+# ✅ FIX vulnerabilities
+RUN apk update && apk upgrade
 
 RUN npm install
 
