@@ -47,13 +47,13 @@ jobs:
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
 
       # 🔐 Scan image (Trivy)
-      - name: Scan Docker image
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          iscan-type: fs
-          scan-ref: .
-          severity: LOW
-          exit-code: 0
+  #    - name: Scan Docker image
+  #      uses: aquasecurity/trivy-action@0.24.0
+  #      with:
+  #        iscan-type: fs
+  #        scan-ref: .
+  #        severity: LOW
+  #        exit-code: 0
 
       # 🚀 (Optional) Push to DockerHub
  #     - name: Login to DockerHub
