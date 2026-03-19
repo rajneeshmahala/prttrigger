@@ -66,3 +66,9 @@ jobs:
           exit-code: 1
           severity: CRITICAL
           ignore-unfixed: true
+     
+          - name: docker image push to acr
+ #         run: |
+ #    #       echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
+ #           docker tag demo-ci-app:${{ env.BUILD_ID }} ${{ secrets.ACR_LOGIN_SERVER }}/demo-ci-app:${{ env.BUILD_ID }}
+ #           docker push ${{ secrets.ACR_LOGIN_SERVER }}/demo-ci-app:${{ env.BUILD_ID }}    
