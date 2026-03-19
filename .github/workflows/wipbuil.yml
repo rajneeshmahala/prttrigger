@@ -75,3 +75,72 @@ jobs:
       #    echo "Tagging image: demo-ci-app:${{ env.BUILD_ID }}"
       #    echo "Target: ${{ secrets.ACR_LOGIN_SERVER }}/demo-ci-app:${{ env.BUILD_ID }}"
       #    echo "🚀 Docker image pushed to Azure Container Registry successfully (simulated)"
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      # ✅ Extract app + sprint + team
+      - name: Extract branch info
+        id: vars
+        run: |
+          SOURCE_BRANCH="${GITHUB_REF#refs/heads/}"
+          echo "Processing: $SOURCE_BRANCH"
+
+          # Validate format
+          if [[ ! "$SOURCE_BRANCH" =~ ^wip\/[a-zA-Z0-9]+-[0-9]+-team[0-9]+$ ]]; then
+            echo "Invalid branch format. Expected: wip/<app>-<sprint>-team<no>"
+            exit 1
+          fi
+
+          APP=$(echo "$SOURCE_BRANCH" | cut -d'/' -f2 | cut -d'-' -f1)
+          SPRINT=$(echo "$SOURCE_BRANCH" | cut -d'-' -f2)
+          TEAM=$(echo "$SOURCE_BRANCH" | cut -d'-' -f3)
+
+          # Mapping
+          if [ "$APP" = "api" ]; then
+            APP="apt"
+          fi
+
+          TARGET_BRANCH="consolidate/${APP}-${TEAM}-${SPRINT}"
+
+          echo "source=$SOURCE_BRANCH" >> $GITHUB_OUTPUT
+          echo "target=$TARGET_BRANCH" >> $GITHUB_OUTPUT
+          echo "app=$APP" >> $GITHUB_OUTPUT
+          echo "sprint=$SPRINT" >> $GITHUB_OUTPUT
+          echo "team=$TEAM" >> $GITHUB_OUTPUT
+
+          echo "Target Branch: $TARGET_BRANCH"
+
+      # ✅ Check if consolidate branch exists
+      - name: Check if consolidate branch exists
+        id: check
+        run: |
+          git fetch origin
+
+          if git ls-remote --exit-code --heads origin "${{ steps.vars.outputs.target }}"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Consolidate branch exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Consolidate branch will be created"
+          fi
+
+      # ✅ Create consolidate branch ONLY if missing
+      - name: Create consolidate branch
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          TARGET="${{ steps.vars.outputs.target }}"
+
+          echo "Creating $TARGET from main"
+          git checkout origin/main -b "$TARGET"
+          git push origin "$TARGET"
+
+      # ✅ Fetch target branch (ensure available)
+      - name: Fetch target branch
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          git fetch origin "${{ steps.vars.outputs.target }}"
+
+      
+   
