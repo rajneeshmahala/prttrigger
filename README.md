@@ -9,4 +9,5 @@ feature > wip> consolidate/team > consolidate> QA > RC > Release > main
 auto create 
 <br>
 ##################branch structure/ syntex ################## <br>
-feature/<appname>-<name>-<sprintid>-team<no/name>
+feature/(appname)-(name)-(sprintid)-team(no/name)
+
