@@ -62,11 +62,11 @@ jobs:
 
       # Fetch QA branch if exists
       - name: Fetch target branch
-        if: steps.check.outputs.exists == 'true'
+ #       if: steps.check.outputs.exists == 'true'
         run: |
           git fetch origin "${{ steps.vars.outputs.target }}"
       - name: Check merge conflict
-        if: steps.check.outputs.exists == 'true'
+ #       if: steps.check.outputs.exists == 'true'
         run: |
           SOURCE=${{ steps.vars.outputs.source }}
           TARGET=${{ steps.vars.outputs.target }}
@@ -86,7 +86,7 @@ jobs:
 
       # ✅ Create PR ONLY if branch already existed
       - name: Create Pull Request
-        if: steps.check.outputs.exists == 'true'
+ #       if: steps.check.outputs.exists == 'true'
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
