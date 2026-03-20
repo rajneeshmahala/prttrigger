@@ -4,11 +4,7 @@ on:
   push:
     branches:
       - 'RC/*'
-  pull_request:
-    branches:
-      - 'RC/*'
-    types: [closed]
-
+  
 jobs:
   build:
     runs-on: ubuntu-latest

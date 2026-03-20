@@ -4,10 +4,7 @@ on:
   push:
     branches:
       - 'Release/*'
-  pull_request:
-    branches:
-      - 'Release/*'
-    types: [closed]
+
 
 jobs:
   build:
