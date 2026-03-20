@@ -1,4 +1,4 @@
-name: Release Deploy to Azure Container App (Demo)
+name: Release Deploy to Azure Container App  
 
 on:
   workflow_run:

@@ -1,4 +1,4 @@
-name: QA Deploy to Azure Container App (Demo)
+name: RC Deploy to Azure Container App 
 
 on:
   workflow_run:
