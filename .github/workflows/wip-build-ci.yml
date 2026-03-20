@@ -1,4 +1,4 @@
-name: Build Pipeline
+name: WIP Build CI
 
 on:
   push:
@@ -37,11 +37,7 @@ jobs:
           SPRINT=$(echo "$SOURCE_BRANCH" | cut -d'-' -f2)
           TEAM=$(echo "$SOURCE_BRANCH" | cut -d'-' -f3)
 
-          # Mapping
-          if [ "$APP" = "api" ]; then
-            APP="apt"
-          fi
-
+          
           TARGET_BRANCH="consolidate/${APP}-${TEAM}-${SPRINT}"
 
           echo "source=$SOURCE_BRANCH" >> $GITHUB_OUTPUT
@@ -147,7 +143,7 @@ jobs:
       #    echo "🚀 Docker image pushed to Azure Container Registry successfully (simulated)"
       # ✅ Conflict check ONLY if branch exists
       - name: Check merge conflict
-        if: steps.check.outputs.exists == 'true'
+#     # if: steps.check.outputs.exists == 'true'
         run: |
           SOURCE=${{ steps.vars.outputs.source }}
           TARGET=${{ steps.vars.outputs.target }}
@@ -167,7 +163,7 @@ jobs:
 
       # ✅ Create PR ONLY if branch already existed
       - name: Create Pull Request
-        if: steps.check.outputs.exists == 'true'
+#     # if: steps.check.outputs.exists == 'true'
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |

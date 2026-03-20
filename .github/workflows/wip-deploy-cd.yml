@@ -1,8 +1,8 @@
-name: Deploy to Azure Container App (Demo)
+name: WIP Deploy to Azure Container App (Demo)
 
 on:
   workflow_run:
-    workflows: ["Build Pipeline"]
+    workflows: ["WIP Build CI"]
     types:
 
       - completed

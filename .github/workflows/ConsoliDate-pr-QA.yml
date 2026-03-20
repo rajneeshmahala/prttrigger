@@ -1,85 +1,70 @@
-name: consolidate team> consolidate final
+name:  ConsoliDate pr to QA 
 
 on:
   push:
     branches:
-      - consolidate/*
-
-permissions:
-  contents: write
-  pull-requests: write
+      - ConsoliDate/*
 
 jobs:
-  manage-wip:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      # Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-      # ✅ Extract app + sprint + team
+# Extract branch info
       - name: Extract branch info
         id: vars
         run: |
           SOURCE_BRANCH="${GITHUB_REF#refs/heads/}"
-
           echo "Processing: $SOURCE_BRANCH"
 
-          
-
           APP=$(echo "$SOURCE_BRANCH" | cut -d'/' -f2 | cut -d'-' -f1)
-          SPRINT=$(echo "$SOURCE_BRANCH" | cut -d'-' -f3)
-          TEAM=$(echo "$SOURCE_BRANCH" | cut -d'-' -f4)
 
-          TARGET_BRANCH="ConsoliDate/${APP}-${SPRINT}"
+          TARGET_BRANCH="QA/${APP}"
 
           echo "source=$SOURCE_BRANCH" >> $GITHUB_OUTPUT
           echo "target=$TARGET_BRANCH" >> $GITHUB_OUTPUT
           echo "app=$APP" >> $GITHUB_OUTPUT
-          echo "sprint=$SPRINT" >> $GITHUB_OUTPUT
-          echo "team=$TEAM" >> $GITHUB_OUTPUT
 
-          echo "✅ Target Branch: $TARGET_BRANCH"
+          echo "Target Branch: $TARGET_BRANCH"
 
-      # ✅ Check if WIP branch exists
-      - name: Check if WIP branch exists
+      # Check if QA branch exists
+      - name: Configu nbre Git
+        run: |
+           git config user.name "github-actions"
+           git config user.email "github-actions@github.com"
+      - name: Check if QA branch exists
         id: check
         run: |
           git fetch origin
 
-          if git ls-remote --exit-code --heads origin ${{ steps.vars.outputs.target }}; then
+          if git ls-remote --exit-code --heads origin "${{ steps.vars.outputs.target }}"; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "✅ WIP branch exists"
+            echo "QA branch exists"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "🚀 WIP branch will be created"
+            echo "QA branch will be created"
           fi
 
-      # ✅ Create WIP branch ONLY if missing
-      - name: Create WIP branch
+      # Create QA branch if missing
+      - name: Create QA branch
         if: steps.check.outputs.exists == 'false'
         run: |
-          TARGET=${{ steps.vars.outputs.target }}
+          TARGET="${{ steps.vars.outputs.target }}"
 
-          echo "Creating $TARGET from main"
+          echo "Creating $TARGET from default branch"
+          git checkout origin/${{ github.event.repository.default_branch }} -b "$TARGET"
+          git push origin "$TARGET"
 
-          git checkout origin/main -b $TARGET
-          git push origin $TARGET
-
-      # ✅ Fetch target branch (ensure available)
+      # Fetch QA branch if exists
       - name: Fetch target branch
         if: steps.check.outputs.exists == 'true'
         run: |
-          git fetch origin ${{ steps.vars.outputs.target }}
-
-      # ✅ Conflict check ONLY if branch exists
+          git fetch origin "${{ steps.vars.outputs.target }}"
       - name: Check merge conflict
         if: steps.check.outputs.exists == 'true'
         run: |
@@ -130,3 +115,4 @@ jobs:
           else
             echo "✔ WIP branch existed. PR handled."
           fi
+    
