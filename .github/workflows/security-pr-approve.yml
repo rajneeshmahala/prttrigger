@@ -29,7 +29,7 @@ jobs:
           node-version: '18'
       # 🔐 Trivy FS Scan
       - name: Run Trivy FS Scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.20.0
         with:
           scan-type: fs
           scan-ref: .
