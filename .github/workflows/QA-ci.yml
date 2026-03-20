@@ -3,8 +3,7 @@ name: QA build Docker CI
 on:
   push:
     branches:
-      
-      - 'QA/*'
+      - QA/*
 
 jobs:
   build:
